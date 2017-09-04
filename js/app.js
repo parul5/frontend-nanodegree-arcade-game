@@ -57,6 +57,8 @@ var Player = function () {
 	this.sprite = 'images/char-boy.png';
 };
 
+// Updating Player location according to inputs
+
 Player.prototype.update = function (direction) {
 	if (direction === 'up') {
 		if (this.y === 60) {
@@ -121,6 +123,7 @@ document.addEventListener('keyup', function (e) {
 	player.handleInput(allowedKeys[e.keyCode]);
 });
 
+// function to detect collision
 var checkCollisions = function () {
 	var charRectangle = {
 		x: player.x,
