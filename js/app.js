@@ -6,16 +6,16 @@ var Enemy = function (pos) {
 
 	// Setting the enemies on different lanes accordingly
 	switch (pos) {
-	case 0:
-		this.y = 50;
-		break;
-	case 1:
-		this.y = 140;
-		break;
-	case 2:
-		this.y = 220;
-		break;
-	default:
+		case 0:
+			this.y = 50;
+			break;
+		case 1:
+			this.y = 140;
+			break;
+		case 2:
+			this.y = 220;
+			break;
+		default:
 	}
 
 	// Randomly selecting spee of enemies
@@ -32,6 +32,7 @@ Enemy.prototype.update = function (dt) {
 	// You should multiply any movement by the dt parameter
 	// which will ensure the game runs at the same speed for
 	// all computers.
+	this.checkCollision();
 
 	if (this.x <= 505) {
 		this.x += this.speed * dt;
@@ -47,12 +48,37 @@ Enemy.prototype.render = function () {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+Enemy.prototype.checkCollision = function () {
+	var charRectangle = {
+		x: player.x,
+		y: player.y,
+		width: 50,
+		height: 50
+	};
+
+	var ob = {
+		width: 65,
+		height: 50
+	};
+
+	if (charRectangle.x < this.x + ob.width &&
+		charRectangle.x + charRectangle.width > this.x &&
+		charRectangle.y < this.y + ob.height &&
+		charRectangle.height + charRectangle.y > this.y) {
+		player.x = TILE_WIDTH * 2;
+		player.y = TILE_HEIGHT * 5 - 15;
+		player.score = 0;
+	}
+};
+
+var TILE_WIDTH = 101,
+	TILE_HEIGHT = 83;
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
-	this.x = 200;
-	this.y = 380;
+	this.x = TILE_WIDTH * 2;
+	this.y = TILE_HEIGHT * 5 - 15;
 	this.score = 0;
 	this.sprite = 'images/char-boy.png';
 };
@@ -60,27 +86,28 @@ var Player = function () {
 // Updating Player location according to inputs
 
 Player.prototype.update = function (direction) {
+
 	if (direction === 'up') {
-		if (this.y === 60) {
+		if (this.y < TILE_WIDTH) {
 			this.score++;
-			this.y = 380;
+			this.y = TILE_HEIGHT * 5 - 15;
 		} else {
-			this.y -= 80;
+			this.y -= TILE_HEIGHT;
 		}
 	}
 	if (direction === 'down') {
-		if (this.y !== 380) {
-			this.y += 80;
+		if (this.y < TILE_HEIGHT * 4) {
+			this.y += TILE_HEIGHT;
 		}
 	}
 	if (direction === 'right') {
-		if (this.x !== 400) {
-			this.x += 100;
+		if (this.x < TILE_WIDTH * 4) {
+			this.x += TILE_WIDTH;
 		}
 	}
 	if (direction === 'left') {
 		if (this.x !== 0) {
-			this.x -= 100;
+			this.x -= TILE_WIDTH;
 		}
 	}
 
@@ -98,7 +125,6 @@ Player.prototype.handleInput = function (key) {
 		player.update(key);
 	}
 };
-
 
 
 // Now instantiate your objects.
@@ -122,34 +148,3 @@ document.addEventListener('keyup', function (e) {
 
 	player.handleInput(allowedKeys[e.keyCode]);
 });
-
-// function to detect collision
-var checkCollisions = function () {
-	var charRectangle = {
-		x: player.x,
-		y: player.y,
-		width: 50,
-		height: 50
-	};
-	var allEnemyRectangles = [];
-	for (var i = 0; i < 3; i++) {
-		var ob = {
-			x: allEnemies[i].x,
-			y: allEnemies[i].y,
-			width: 65,
-			height: 50
-		};
-		allEnemyRectangles.push(ob);
-	}
-
-	for (var j = 0; j < 3; j++) {
-		if (charRectangle.x < allEnemyRectangles[j].x + allEnemyRectangles[j].width &&
-			charRectangle.x + charRectangle.width > allEnemyRectangles[j].x &&
-			charRectangle.y < allEnemyRectangles[j].y + allEnemyRectangles[j].height &&
-			charRectangle.height + charRectangle.y > allEnemyRectangles[j].y) {
-			player.x = 200;
-			player.y = 380;
-			player.score = 0;
-		}
-	}
-};
