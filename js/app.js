@@ -1,5 +1,12 @@
+function Character() {};
+
+Character.prototype.render = function () {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+	ctx.fillText(score, 10, 580);
+}
 // Enemies our player must avoid
 var Enemy = function (pos) {
+	Character.call(this);
 	// Variables applied to each of our instances go here,
 	// we've provided one for you to get started
 	this.x = -100;
@@ -18,13 +25,16 @@ var Enemy = function (pos) {
 		default:
 	}
 
-	// Randomly selecting spee of enemies
+	// Randomly selecting speed of enemies
 	this.speed = Math.floor(Math.random() * 300 + 200);
 
 	// The image/sprite for our enemies, this uses
 	// a helper we've provided to easily load images
 	this.sprite = 'images/enemy-bug.png';
 };
+
+Enemy.prototype = Object.create(Character.prototype);
+Enemy.prototype.constructor = Enemy;
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -44,9 +54,9 @@ Enemy.prototype.update = function (dt) {
 
 
 // Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function () {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+// Enemy.prototype.render = function () {
+// 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+// };
 
 Enemy.prototype.checkCollision = function () {
 	var charRectangle = {
@@ -67,21 +77,26 @@ Enemy.prototype.checkCollision = function () {
 		charRectangle.height + charRectangle.y > this.y) {
 		player.x = TILE_WIDTH * 2;
 		player.y = TILE_HEIGHT * 5 - 15;
-		player.score = 0;
+		score = 0;
 	}
 };
 
 var TILE_WIDTH = 101,
-	TILE_HEIGHT = 83;
+	TILE_HEIGHT = 83,
+	score = 0;
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
+	Character.call(this);
 	this.x = TILE_WIDTH * 2;
 	this.y = TILE_HEIGHT * 5 - 15;
-	this.score = 0;
 	this.sprite = 'images/char-boy.png';
 };
+
+Player.prototype = Object.create(Character.prototype);
+Player.prototyppe = Player;
 
 // Updating Player location according to inputs
 
@@ -89,7 +104,7 @@ Player.prototype.update = function (direction) {
 
 	if (direction === 'up') {
 		if (this.y < TILE_WIDTH) {
-			this.score++;
+			score++;
 			this.y = TILE_HEIGHT * 5 - 15;
 		} else {
 			this.y -= TILE_HEIGHT;
@@ -114,15 +129,15 @@ Player.prototype.update = function (direction) {
 	ctx.font = "30px Arial";
 };
 
-Player.prototype.render = function () {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-	ctx.fillText(this.score, 10, 580);
-};
+// Player.prototype.render = function () {
+// 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+// 	ctx.fillText(this.score, 10, 580);
+// };
 
 
 Player.prototype.handleInput = function (key) {
 	if (key === 'left' || key === 'up' || key === 'right' || key === 'down') {
-		player.update(key);
+		this.update(key);
 	}
 };
 
